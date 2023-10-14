@@ -11,7 +11,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@prisma/client": "^5.1.1",
+    "@clerk/nextjs": "^4.25.1",
+    "@prisma/client": "^5.3.1",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@tanstack/react-query": "^4.32.6",
     "@trpc/client": "^10.37.1",
@@ -32,7 +33,7 @@
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8.47.0",
+    "eslint": "^8.50.0",
     "eslint-config-next": "^13.4.19",
     "postcss": "^8.4.27",
     "prettier": "^3.0.0",
