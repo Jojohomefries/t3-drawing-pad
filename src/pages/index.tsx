@@ -1,13 +1,56 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 
 import { api } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
+
+const CreateSketchbook = () => {
+  const { user } = useUser();
+  
+  if (!user) return null;
+
+  return <div className="p-4">
+    Create Sketchbook!
+  </div>
+}
+
+const ProfileBadge = () => {
+  const { user } = useUser();
+  
+  if (!user) return null;
+
+  return <div>
+    <Image 
+      src={user.imageUrl} 
+      alt="Profile" 
+      className="w-12 h-12 rounded-full p-4" 
+      width={12}
+      height={12}
+      />
+  </div>
+}
+
+type SketchbookWithUser = RouterOutputs["sketchbook"]["getById"][number];
+const SketchbookView = (sketchbook: SketchbookWithUser ) => {
+  return (
+    <div key={sketchbook.id} className="border-b border-slate-400 p-8">
+                {sketchbook.title}
+                </div>
+  )
+}
 
 export default function Home() {
   
   const user = useUser();
-  const { data, isLoading } = api.sketchbook.getAll.useQuery();
+  const userId = user.user?.id ?? null;
+  //TODO
+  console.log(user);
+
+  if (!userId) return <div>Not logged in</div>;
+
+  const { data, isLoading } = api.sketchbook.getById.useQuery(userId);
 
   if (isLoading) return <div>Loading...</div>;
 
@@ -28,14 +71,17 @@ export default function Home() {
                 <SignInButton />
               </div>
             )}
-            {!!user.isSignedIn && <SignOutButton />}
+            {!!user.isSignedIn && (
+              <div>
+              <CreateSketchbook />
+              <ProfileBadge />
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col">
             {data?.map((sketchbook) => (
-              <div key={sketchbook.id} className="border-b border-slate-400 p-8">
-                {sketchbook.title}
-                </div>
+              <SketchbookView {...sketchbook} key={sketchbook.id} />
             ))}
           </div>
         </div>
