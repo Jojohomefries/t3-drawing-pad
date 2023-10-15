@@ -2,6 +2,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { LoadingPage, LoadingSpinner } from "~/components/loading";
 
 import { api } from "~/utils/api";
 import type { RouterOutputs } from "~/utils/api";
@@ -41,8 +42,8 @@ const SketchbookView = (sketchbook: SketchbookWithUser ) => {
   )
 }
 
-export default function Home() {
-  
+const Feed = () => {
+
   const user = useUser();
   const userId = user.user?.id ?? null;
   //TODO
@@ -52,9 +53,30 @@ export default function Home() {
 
   const { data, isLoading } = api.sketchbook.getById.useQuery(userId);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingPage />;
 
   if (!data) return <div>Something went wrong</div>;
+
+  return (
+    <div className="flex flex-col">
+            {data?.map((sketchbook) => (
+              <SketchbookView {...sketchbook} key={sketchbook.id} />
+            ))}
+          </div>
+  )
+}
+
+export default function Home() {
+  
+  const user = useUser();
+  const userId = user.user?.id ?? null;
+  //TODO
+  console.log(user);
+
+  if (!userId) return <div>Not logged in</div>;
+
+  // fetch data as soon as possible
+  api.sketchbook.getById.useQuery(userId);
 
   return (
     <>
@@ -78,12 +100,7 @@ export default function Home() {
               </div>
             )}
           </div>
-          
-          <div className="flex flex-col">
-            {data?.map((sketchbook) => (
-              <SketchbookView {...sketchbook} key={sketchbook.id} />
-            ))}
-          </div>
+          <Feed />          
         </div>
       </main>
     </>
